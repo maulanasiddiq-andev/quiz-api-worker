@@ -22,6 +22,10 @@ jobs:
           workload_identity_provider: projects/1065568145771/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: github-actions-artifact-regist@compact-orb-472513-j5.iam.gserviceaccount.com
 
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -29,5 +33,5 @@ jobs:
           file: ./QuizWorker/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quizworker:latest
+            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quizworker:${{ github.sha }}
