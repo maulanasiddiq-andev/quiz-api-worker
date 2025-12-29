@@ -3,11 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore dependencies
-COPY ["QuizWorker.csproj", "./"]
+COPY ["QuizWorker/QuizWorker.csproj", "./"]
 RUN dotnet restore
 
 # Copy the remaining source and publish
-COPY . .
+COPY ./QuizWorker ./
 RUN dotnet publish -c Release -o /app/out
 
 # Runtime stage
