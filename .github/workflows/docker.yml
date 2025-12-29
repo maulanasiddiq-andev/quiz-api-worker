@@ -11,18 +11,16 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          workload_identity_provider: projects/1065568145771/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions-artifact-regist@compact-orb-472513-j5.iam.gserviceaccount.com
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
