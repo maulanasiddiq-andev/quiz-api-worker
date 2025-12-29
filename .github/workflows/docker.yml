@@ -34,5 +34,5 @@ jobs:
           file: ./QuizWorker/Dockerfile
           push: true
           tags: |
-            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quizworker:latest
-            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quizworker:${{ github.sha }}
+            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quiz-api-worker:latest
+            asia-southeast2-docker.pkg.dev/compact-orb-472513-j5/containers/quiz-api-worker:${{ github.sha }}
