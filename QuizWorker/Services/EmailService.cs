@@ -33,12 +33,19 @@ namespace QuizWorker.Services
 
             consumer.ReceivedAsync += async (_, args) =>
             {
-                var json = Encoding.UTF8.GetString(args.Body.ToArray());
-                var message = JsonSerializer.Deserialize<EmailQueue>(json)!;
+                try
+                {
+                    var json = Encoding.UTF8.GetString(args.Body.ToArray());
+                    var message = JsonSerializer.Deserialize<EmailQueue>(json)!;
 
-                await SendEmailAsync(message);
+                    await SendEmailAsync(message);
 
-                await channel.BasicAckAsync(args.DeliveryTag, false);  
+                    await channel.BasicAckAsync(args.DeliveryTag, false);   
+                }
+                catch (Exception)
+                {
+                    await channel.BasicNackAsync(args.DeliveryTag, false, true);
+                }
             };
 
             await channel.BasicConsumeAsync(QueueConstant.EmailQueue, false, consumer);
@@ -46,7 +53,7 @@ namespace QuizWorker.Services
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
 
-        private Task SendEmailAsync(EmailQueue email)
+        private async Task SendEmailAsync(EmailQueue email)
         {
             // plug your SMTP provider here
             var message = new MimeMessage();
@@ -79,14 +86,12 @@ namespace QuizWorker.Services
 
             using (var client = new SmtpClient())
             {
-                client.Connect(emailSetting.SmtpServer, emailSetting.Port, MailKit.Security.SecureSocketOptions.StartTls);
-                client.Authenticate(emailSetting.Username, emailSetting.Password);
+                await client.ConnectAsync(emailSetting.SmtpServer, emailSetting.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(emailSetting.Username, emailSetting.Password);
 
-                client.Send(message);
-                client.Disconnect(true);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
-            
-            return Task.CompletedTask;
         }
     }
 }
