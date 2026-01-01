@@ -24,6 +24,8 @@ builder.Services.AddSingleton(sp =>
 
 var app = builder.Build();
 
+app.MapGet("/", () => "OK");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
