@@ -36,3 +36,11 @@ jobs:
           tags: |
             ${{ secrets.ARTIFACT_REGISTRY }}:latest
             ${{ secrets.ARTIFACT_REGISTRY }}:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy quiz-api-worker \
+            --image=${{ secrets.ARTIFACT_REGISTRY }}:${{ github.sha }} \
+            --region=asia-southeast2 \
+            --platform=managed \
+            --allow-unauthenticated
