@@ -17,7 +17,10 @@ builder.Services.RegisterRepositories();
 var rabbitMQConnectionString = builder.Configuration.GetConnectionString("RabbitMQ");
 builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
     {
-        Uri = new Uri(rabbitMQConnectionString ?? "amqp://guest:guest@localhost:5672/")
+        Uri = new Uri(rabbitMQConnectionString ?? "amqp://guest:guest@localhost:5672/"),
+        AutomaticRecoveryEnabled = true,
+        TopologyRecoveryEnabled = true,
+        NetworkRecoveryInterval = TimeSpan.FromSeconds(5)
     }
 );
 

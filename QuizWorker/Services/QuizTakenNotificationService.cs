@@ -26,8 +26,8 @@ namespace QuizWorker.Services
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var connection = await connectionFactory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            var connection = await connectionFactory.CreateConnectionAsync();
+            var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(QueueConstant.NotificationQueue, true, false, false);
             await channel.BasicQosAsync(0, 1, false);
@@ -54,7 +54,7 @@ namespace QuizWorker.Services
                 }
             };
 
-            await channel.BasicConsumeAsync(QueueConstant.EmailQueue, false, consumer);
+            await channel.BasicConsumeAsync(QueueConstant.NotificationQueue, false, consumer);
 
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
