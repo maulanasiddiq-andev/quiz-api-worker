@@ -15,13 +15,11 @@ builder.Services.RegisterRepositories();
 
 // RabbitMQ
 var rabbitMQConnectionString = builder.Configuration.GetConnectionString("RabbitMQ");
-builder.Services.AddSingleton(sp =>
-{
-    return new ConnectionFactory
+builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
     {
         Uri = new Uri(rabbitMQConnectionString ?? "amqp://guest:guest@localhost:5672/")
-    }.CreateConnectionAsync().GetAwaiter().GetResult();
-});
+    }
+);
 
 var app = builder.Build();
 
@@ -33,7 +31,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.Run();
 

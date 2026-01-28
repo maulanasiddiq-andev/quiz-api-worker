@@ -7,22 +7,28 @@ using RabbitMQ.Client.Events;
 using Google.Apis.Auth.OAuth2;
 using System.Net.Http.Headers;
 using QuizWorker.Queues;
+using Microsoft.Extensions.Options;
 
 namespace QuizWorker.Services
 {
     public class QuizTakenNotificationService : BackgroundService
     {
-        private readonly IConnection connection;
         private readonly PushNotificationSetting pushNotificationSetting;
-        public QuizTakenNotificationService(IConnection connection, PushNotificationSetting pushNotificationSetting)
+        private readonly IConnectionFactory connectionFactory;
+        public QuizTakenNotificationService(
+            IOptions<PushNotificationSetting> pushNotificationOptions, 
+            IConnectionFactory connectionFactory
+        )
         {
-            this.connection = connection;
-            this.pushNotificationSetting = pushNotificationSetting;
+            this.pushNotificationSetting = pushNotificationOptions.Value;
+            this.connectionFactory = connectionFactory;
         }
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var channel = await connection.CreateChannelAsync();
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+
             await channel.QueueDeclareAsync(QueueConstant.NotificationQueue, true, false, false);
             await channel.BasicQosAsync(0, 1, false);
 

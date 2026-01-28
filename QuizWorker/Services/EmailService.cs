@@ -13,20 +13,22 @@ namespace QuizWorker.Services
 {
     public class EmailService : BackgroundService
     {
-        private readonly IConnection connection;
+        private readonly IConnectionFactory connectionFactory;
         private readonly EmailSetting emailSetting;
         public EmailService(
-            IConnection connection,
+            IConnectionFactory connectionFactory,
             IOptions<EmailSetting> emailOptions
         )
         {
-            this.connection = connection;
+            this.connectionFactory = connectionFactory;
             emailSetting = emailOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var channel = await connection.CreateChannelAsync();
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+
             await channel.QueueDeclareAsync(QueueConstant.EmailQueue, true, false, false);
             await channel.BasicQosAsync(0, 1, false);
 
