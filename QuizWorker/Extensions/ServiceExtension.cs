@@ -7,6 +7,7 @@ namespace QuizWorker.Extensions
         public static void RegisterRepositories(this IServiceCollection collection)
         {
             collection.AddHostedService<EmailService>();
+            collection.AddHostedService<QuizTakenNotificationService>();
         }
     }
 }

@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSetting"));
+builder.Services.Configure<PushNotificationSetting>(builder.Configuration.GetSection("PushNotificationSetting"));
 
 builder.Services.RegisterRepositories();
 
