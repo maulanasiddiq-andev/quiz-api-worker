@@ -48,8 +48,9 @@ namespace QuizWorker.Services
 
                     await channel.BasicAckAsync(args.DeliveryTag, false);   
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine(e);
                     await channel.BasicNackAsync(args.DeliveryTag, false, true);
                 }
             };
@@ -89,6 +90,7 @@ namespace QuizWorker.Services
             );
 
             var result = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(result);
         }
 
         private async Task<string> GetAccessTokenAsync()
@@ -98,6 +100,7 @@ namespace QuizWorker.Services
             // var path = Path.Combine(AppContext.BaseDirectory, "firebase-service-account.json");
             
             var credential = await GoogleCredential.GetApplicationDefaultAsync();
+            Console.WriteLine(credential);
 
             credential = credential.CreateScoped("https://www.googleapis.com/auth/cloud-platform");
 
